@@ -1,0 +1,1 @@
+export const fbLoginPermissions = ['public_profile', 'email']
