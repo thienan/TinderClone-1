@@ -1,30 +1,26 @@
 import React, { Component } from 'react'
-import {
-  StyleSheet,
-  Text,
-  View,
-  Button
-} from 'react-native'
-import { handleFbLogin } from './lib/auth'
+import { createStore, applyMiddleware, combineReducers } from 'redux'
+import { Provider } from 'react-redux'
+import thunkMiddleware from 'redux-thunk'
+import logger from 'redux-logger'
+import { NativeRouter, Route, Switch } from 'react-router-native'
 
-export default class App extends Component {
+import LoginPage from './containers/LoginPage'
+import DiscoverPage from './containers/DiscoverPage'
+
+class App extends Component {
   render() {
     return (
-      <View style={styles.container}>
-      <Button
-        onPress={handleFbLogin}
-        title="Sign in with facebook"
-        color="#3c50e8"
-      />
-      </View>
+      <Provider>
+        <NativeRouter>
+          <Switch>
+            <Route exact path="/" component={DiscoverPage} />
+            <Route path="/main" component={LoginPage} />
+          </Switch>
+        </NativeRouter>
+      </Provider>
     )
   }
 }
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
-  }
-})
+
+export default App
