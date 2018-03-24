@@ -15,9 +15,9 @@ import {
   Footer,
   FooterTab,
   Icon,
-  DeckSwiper,
-  Card,
-  CardItem,
+  List,
+  ListItem,
+  Thumbnail
 } from 'native-base'
 
 import {
@@ -48,7 +48,7 @@ const cards = [
   }
 ]
 
-class DiscoverPage extends Component {
+class MatchesPage extends Component {
   constructor(props) {
     super(props)
   }
@@ -58,33 +58,25 @@ class DiscoverPage extends Component {
       <Container>
         <Header noShadow={true} style={styles.header} androidStatusBarColor={GREY}>
           <Body style={styles.headerBody}>
-            <Title style={styles.headerTitle}>Discover</Title>
+            <Title style={styles.headerTitle}>Matches</Title>
           </Body>
         </Header>
-        <Content contentContainerStyle={styles.contentContainer}>
-          <View>
-            <DeckSwiper
-              dataSource={cards}
-              renderItem={item =>
-                <View>
-                  <CardItem style={styles.cardImageItem} cardBody>
-                    <Image style={styles.cardImage} source={item.image} />
-                  </CardItem>
-                  <CardItem style={styles.cardTextItem}>
-                    <Text style={styles.cardText}>{`${item.name}, ${item.age}`}</Text>
-                  </CardItem>
-                </View>
-              }
-            />
-          </View>
-          <View style={styles.actionsWrapper}>
-            <LinearGradient colors={[DARK_PINK, ORANGE]} style={styles.action}>
-              <Icon name="md-close" style={styles.actionIcon} />
-            </LinearGradient>
-            <LinearGradient colors={[PINK, PURPLE]} style={styles.action}>
-              <Icon name="md-heart" style={styles.actionIcon} />
-            </LinearGradient>
-          </View>
+        <Content>
+          <List dataArray={cards} renderRow={(item) =>
+              <ListItem avatar>
+                <Left>
+                  <Thumbnail source={item.image} />
+                </Left>
+                <Body>
+                  <Text style={styles.matchName}>{item.name}</Text>
+                  <Text note style={styles.matchText}>Doing what you like will always keep you happy ...</Text>
+                </Body>
+                <Right style={styles.viewButtonContainer}>
+                  <Text style={styles.matchText}>View</Text>
+                </Right>
+              </ListItem>
+            }
+          />
         </Content>
         <Footer>
           <FooterTab style={styles.footerTab}>
@@ -92,10 +84,10 @@ class DiscoverPage extends Component {
               <Icon name="ios-happy-outline" style={styles.footerIcon}/>
             </Button>
             <Button onPress={() => this.props.history.push('/discover')}>
-              <Icon name="ios-swap" style={styles.footerIconActive}/>
+              <Icon name="ios-swap" style={styles.footerIcon}/>
             </Button>
             <Button onPress={() => this.props.history.push('/matches')}>
-              <Icon name="ios-chatbubbles-outline" style={styles.footerIcon}/>
+              <Icon name="ios-chatbubbles-outline" style={styles.footerIconActive}/>
             </Button>
           </FooterTab>
         </Footer>
@@ -104,4 +96,4 @@ class DiscoverPage extends Component {
   }
 }
 
-export default DiscoverPage
+export default MatchesPage
