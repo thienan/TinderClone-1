@@ -80,7 +80,7 @@ class MatchesPage extends Component {
         </Content>
         <Footer>
           <FooterTab style={styles.footerTab}>
-            <Button>
+            <Button onPress={() => this.props.history.push('/account')}>
               <Icon name="ios-happy-outline" style={styles.footerIcon}/>
             </Button>
             <Button onPress={() => this.props.history.push('/discover')}>

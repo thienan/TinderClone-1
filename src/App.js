@@ -8,15 +8,17 @@ import { NativeRouter, Route, Switch } from 'react-router-native'
 import LoginPage from './containers/LoginPage'
 import DiscoverPage from './containers/DiscoverPage'
 import MatchesPage from './containers/MatchesPage'
+import AccountPage from './containers/AccountPage'
 
 class App extends Component {
   render() {
     return (
       <NativeRouter>
         <Switch>
-          <Route exact path='/' component={DiscoverPage} />
+          <Route exact path='/' component={AccountPage} />
           <Route path='/matches' component={MatchesPage} />
           <Route path='/discover' component={DiscoverPage} />
+          <Route path='/account' component={AccountPage} />
         </Switch>
       </NativeRouter>
     )
