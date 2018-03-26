@@ -4,6 +4,7 @@ import { Provider } from 'react-redux'
 import thunkMiddleware from 'redux-thunk'
 import logger from 'redux-logger'
 import { NativeRouter, Route, Switch } from 'react-router-native'
+import SplashScreen from "rn-splash-screen"
 
 import LoginPage from './containers/LoginPage'
 import DiscoverPage from './containers/DiscoverPage'
@@ -11,6 +12,9 @@ import MatchesPage from './containers/MatchesPage'
 import AccountPage from './containers/AccountPage'
 
 class App extends Component {
+  componentDidMount() {
+    SplashScreen.hide();
+  }
   render() {
     return (
       <NativeRouter>

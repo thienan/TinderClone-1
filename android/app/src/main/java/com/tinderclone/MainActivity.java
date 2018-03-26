@@ -2,6 +2,13 @@ package com.tinderclone;
 
 import com.facebook.react.ReactActivity;
 
+import android.graphics.Color;
+import android.os.Bundle;
+
+import com.facebook.react.ReactInstanceManager;
+import com.facebook.react.bridge.ReactContext;
+import com.mehcode.reactnative.splashscreen.SplashScreen;
+
 public class MainActivity extends ReactActivity {
 
     /**
@@ -11,5 +18,12 @@ public class MainActivity extends ReactActivity {
     @Override
     protected String getMainComponentName() {
         return "TinderClone";
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        SplashScreen.show(this, getReactInstanceManager());
+
+        super.onCreate(savedInstanceState);
     }
 }
