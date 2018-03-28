@@ -25,8 +25,8 @@ class LoginPage extends Component {
     FacebookAuth.login(['public_profile', 'email']).then((token) => {
       firebase
         .auth()
-        .signInWithCredential(firebase.auth.FacebookAuthProvider.credential(token))
-        .then((user) => { debugger })
+        .signInAndRetrieveDataWithCredential(firebase.auth.FacebookAuthProvider.credential(token))
+        .then((user) => { this.props.history.push('/account') })
     })
   }
 

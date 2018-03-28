@@ -19,7 +19,7 @@ class App extends Component {
     return (
       <NativeRouter>
         <Switch>
-          <Route exact path='/' component={AccountPage} />
+          <Route exact path='/' component={LoginPage} />
           <Route path='/matches' component={MatchesPage} />
           <Route path='/discover' component={DiscoverPage} />
           <Route path='/account' component={AccountPage} />
