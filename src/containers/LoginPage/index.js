@@ -22,11 +22,23 @@ class LoginPage extends Component {
   }
 
   handleFbLogin() {
-    FacebookAuth.login(['public_profile', 'email']).then((token) => {
-      firebase
-        .auth()
-        .signInAndRetrieveDataWithCredential(firebase.auth.FacebookAuthProvider.credential(token))
-        .then((user) => { this.props.history.push('/account') })
+    FacebookAuth.login(['public_profile', 'email']).then((data) => {
+      const token = data.credentials.token
+      const firebaseCredentials = firebase.auth.FacebookAuthProvider.credential(token)
+      firebase.auth().signInAndRetrieveDataWithCredential(firebaseCredentials)
+        .then((data) => {
+          if (data.additionalUserInfo.isNewUser) {
+            const userInfo = data.user
+            const profile = data.additionalUserInfo.profile
+            const newUser = { gender: profile.gender,
+                              age: profile.age_range.min,
+                              email: userInfo.email,
+                              displayName: userInfo.displayName,
+                              photoUrl: userInfo.photoURL }
+            firebase.database().ref(`users/${userInfo.uid}`).set(newUser)
+          }
+          this.props.history.push('/account')
+        })
     })
   }
 
