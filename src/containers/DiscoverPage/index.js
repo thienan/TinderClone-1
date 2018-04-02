@@ -1,5 +1,9 @@
 
 import React, { Component } from 'react'
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux'
+import firebase from '../../utils/firebase'
+
 import { StyleSheet, Image } from 'react-native'
 import {
   Container,
@@ -30,27 +34,83 @@ import {
 import styles from './styles'
 import LinearGradient from 'react-native-linear-gradient'
 
-const cards = [
-  {
-    name: 'Emilia Clarke',
-    age: 21,
-    image: {uri: 'https://vignette.wikia.nocookie.net/starwars/images/5/52/Emilia_Clarke.png/revision/latest?cb=20161119014350'},
-  },
-  {
-    name: 'Emma Watson',
-    age: 25,
-    image: {uri: 'https://media2.s-nbcnews.com/i/newscms/2018_01/1308579/emma-watson-today-180105-tease_f3ca373df8f31d68e977fe207aa4a80e.jpg'}
-  },
-  {
-    name: 'Scarlett Johansson',
-    age: 29,
-    image: {uri: 'http://hot97svg.com/wp-content/uploads/2018/01/Scarlett-Johansson-2014-1170x658.jpg'}
-  }
-]
+const gendersMap = {
+  male: 'female',
+  female: 'male'
+}
 
 class DiscoverPage extends Component {
   constructor(props) {
     super(props)
+    this.state = { users: [] }
+    this.swipeRight = this.swipeRight.bind(this)
+    this.swipeLeft = this.swipeLeft.bind(this)
+    this.renderCard = this.renderCard.bind(this)
+  }
+
+  componentDidMount() {
+    const account = this.props.account
+    const usersRef = firebase.database().ref(gendersMap[account.gender])
+                              .orderByChild(`show_${account.id}`)
+                              .equalTo(true)
+    usersRef.on('child_added', (data) => {
+      const users = this.state.users
+      users.push({ ...data.val(), id: data.key })
+      this.setState({ users })
+    })
+  }
+
+  swipeRight(user) {
+    const account = this.props.account
+    const updates = {}
+    updates[`users/${user.id}/show_${account.id}`] = false
+    updates[`users/${user.id}/liked_${account.id}`] = true
+    if (account[`liked_${user.id}`]) {
+      const key = firebase.database().ref().child('matches').push().key
+      updates[`matches/${key}/member_${account.id}`] = true
+      updates[`matches/${key}/member_${user.id}`] = true
+      updates[`matches/${key}/title_${account.id}`] = user.displayName
+      updates[`matches/${key}/title_${user.id}`] = account.displayName
+      updates[`matches/${key}/photo_${account.id}`] = user.photoUrl
+      updates[`matches/${key}/photo_${user.id}`] = account.photoUrl 
+    }
+    firebase.database().ref().update(updates)
+  }
+
+  swipeLeft(user) {
+    const account = this.props.account
+    const updates = {}
+    updates[`users/${user.id}/show_${account.id}`] = false
+    updates[`users/${account.id}/show_${user.id}`] = false
+    firebase.database().ref().update(updates)
+  }
+
+  renderCard(item) {
+    return (
+      <View>
+        <CardItem style={styles.cardImageItem} cardBody>
+          <Image style={styles.cardImage} source={{ uri: item.photoUrl }} />
+        </CardItem>
+        <CardItem style={styles.cardTextItem}>
+          <Text style={styles.cardText}>{`${item.displayName}, ${item.age}`}</Text>
+        </CardItem>
+      </View>
+    )
+  }
+
+  renderDeskSwiper() {
+    if (this.state.users.length > 0) {
+      return (
+        <DeckSwiper
+          dataSource={this.state.users}
+          looping = {false}
+          renderItem={this.renderCard}
+          onSwipeRight={this.swipeRight}
+          onSwipeLeft={this.swipeLeft}
+        />
+      )
+    }
+    return false
   }
 
   render() {
@@ -62,21 +122,7 @@ class DiscoverPage extends Component {
           </Body>
         </Header>
         <Content contentContainerStyle={styles.contentContainer}>
-          <View>
-            <DeckSwiper
-              dataSource={cards}
-              renderItem={item =>
-                <View>
-                  <CardItem style={styles.cardImageItem} cardBody>
-                    <Image style={styles.cardImage} source={item.image} />
-                  </CardItem>
-                  <CardItem style={styles.cardTextItem}>
-                    <Text style={styles.cardText}>{`${item.name}, ${item.age}`}</Text>
-                  </CardItem>
-                </View>
-              }
-            />
-          </View>
+          <View>{this.renderDeskSwiper()}</View>
           <View style={styles.actionsWrapper}>
             <LinearGradient colors={[DARK_PINK, ORANGE]} style={styles.action}>
               <Icon name="md-close" style={styles.actionIcon} />
@@ -104,4 +150,5 @@ class DiscoverPage extends Component {
   }
 }
 
-export default DiscoverPage
+const mapStateToProps = (state) => ({ account: state.account })
+export default connect(mapStateToProps)(DiscoverPage)

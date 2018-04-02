@@ -1,5 +1,9 @@
 
 import React, { Component } from 'react'
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux'
+import firebase from '../../utils/firebase'
+
 import { StyleSheet, Image } from 'react-native'
 import {
   Container,
@@ -19,6 +23,7 @@ import {
   ListItem,
   Thumbnail
 } from 'native-base'
+import LinearGradient from 'react-native-linear-gradient'
 
 import {
   PINK,
@@ -28,7 +33,6 @@ import {
   ORANGE
 } from '../../constants/colors'
 import styles from './styles'
-import LinearGradient from 'react-native-linear-gradient'
 
 const cards = [
   {
@@ -51,6 +55,27 @@ const cards = [
 class MatchesPage extends Component {
   constructor(props) {
     super(props)
+    this.state = {
+      users: []
+    }
+  }
+
+  componentDidMount() {
+    const account = this.props.account
+    const gendersMap = {
+      male: 'female',
+      female: 'male'
+    }
+    const preferedGender = gendersMap[account.gender]
+    const usersRef = firebase.database().ref()
+                                      .child(preferedGender)
+                                      .orderByChild(`hideFor/${account.id}`)
+                                      .equalTo(null)
+    usersRef.on('child_added', (data) => {
+      const users = this.state.users
+      users.push(data.val())
+      this.setState({ users })
+    })
   }
 
   render() {
@@ -62,13 +87,13 @@ class MatchesPage extends Component {
           </Body>
         </Header>
         <Content>
-          <List dataArray={cards} renderRow={(item) =>
+          <List dataArray={this.state.users} renderRow={(item) =>
               <ListItem avatar>
                 <Left>
-                  <Thumbnail source={item.image} />
+                  <Thumbnail source={{ uri: item.photoUrl }} />
                 </Left>
                 <Body>
-                  <Text style={styles.matchName}>{item.name}</Text>
+                  <Text style={styles.matchName}>{item.displayName}</Text>
                   <Text note style={styles.matchText}>Doing what you like will always keep you happy ...</Text>
                 </Body>
                 <Right style={styles.viewButtonContainer}>
@@ -96,4 +121,5 @@ class MatchesPage extends Component {
   }
 }
 
-export default MatchesPage
+const mapStateToProps = (state) => ({ account: state.account })
+export default connect(mapStateToProps)(MatchesPage)

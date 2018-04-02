@@ -1,5 +1,7 @@
 
 import React, { Component } from 'react'
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux'
 import { StyleSheet, Image } from 'react-native'
 import {
   Container,
@@ -17,7 +19,8 @@ import {
   Icon,
   List,
   ListItem,
-  Thumbnail
+  Thumbnail,
+  Spinner
 } from 'native-base'
 
 import {
@@ -31,18 +34,14 @@ import {
 import styles from './styles'
 import LinearGradient from 'react-native-linear-gradient'
 
-const account = {
-    name: 'Emilia Clarke',
-    age: 21,
-    image: { uri: 'https://vignette.wikia.nocookie.net/starwars/images/5/52/Emilia_Clarke.png/revision/latest?cb=20161119014350' },
-}
-
-class MatchesPage extends Component {
+class AccountPage extends Component {
   constructor(props) {
     super(props)
   }
 
   render() {
+    const account = this.props.account
+    const showLoader = !Object.keys(account).length
     return (
       <Container>
         <Header noShadow={true} style={styles.header} androidStatusBarColor={GREY}>
@@ -50,20 +49,24 @@ class MatchesPage extends Component {
             <Title style={styles.headerTitle}>Account</Title>
           </Body>
         </Header>
-        <Content contentContainerStyle={styles.contentContainer}>
-          <Thumbnail large source={account.image} />
-          <Text style={styles.accountName}>{`${account.name}, ${account.age}`}</Text>
-          <LinearGradient colors={ [PINK, PURPLE] } style={styles.gradientButton}
-            start={{x: 0.0, y: 0.0}} end={{x: 1.0, y: 1.0}} >
-            <Icon name='ios-settings' style={styles.buttonIcon} />
-            <Text style={styles.buttonText} >Settings</Text>
-          </LinearGradient>
-          <LinearGradient colors={ [PINK, PURPLE] } style={styles.gradientButton}
-            start={{x: 0, y: 0}} end={{x: 1, y: 1}} >
-            <Icon name='md-create' style={styles.buttonIcon} />
-            <Text style={styles.buttonText} >Edit Profile</Text>
-          </LinearGradient>
-        </Content>
+          {
+            showLoader &&
+            <Content contentContainerStyle={styles.contentContainer}>
+              <Spinner color={PURPLE} />
+            </Content>
+          }
+          {
+            !showLoader &&
+            <Content contentContainerStyle={styles.contentContainer}>
+              <Thumbnail large source={{ uri: account.photoUrl }} />
+              <Text style={styles.accountName}>{`${account.displayName}, ${account.age}`}</Text>
+              <LinearGradient colors={ [PINK, PURPLE] } style={styles.gradientButton}
+                start={{x: 0.0, y: 0.0}} end={{x: 1.0, y: 1.0}} >
+                <Icon name='ios-settings' style={styles.buttonIcon} />
+                <Text style={styles.buttonText} >Settings</Text>
+              </LinearGradient>
+            </Content>
+          }
         <Footer>
           <FooterTab style={styles.footerTab}>
             <Button onPress={() => this.props.history.push('/account')}>
@@ -82,4 +85,5 @@ class MatchesPage extends Component {
   }
 }
 
-export default MatchesPage
+const mapStateToProps = (state) => ({ account: state.account })
+export default connect(mapStateToProps)(AccountPage)

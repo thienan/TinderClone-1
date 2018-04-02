@@ -4,8 +4,23 @@ admin.initializeApp(functions.config().firebase)
 
 const ref = admin.database().ref()
 
-exports.createUserIndex = functions.database.ref('users/{userId}').onCreate(event => {
+exports.createUserIndex = functions.database.ref('users/{userId}').onWrite(event => {
   const user = event.data.val()
   const newGenderRef = ref.child(`${user.gender}/${event.params.userId}`)
   return newGenderRef.set(user)
+})
+
+exports.createUserShowAttributes = functions.database.ref('users/{userId}').onCreate(event => {
+  return admin.database().ref('users').once('value',(snap) => {
+    const users = snap.val()
+    const newUsers = {}
+    const userId = event.params.userId
+
+    for(var key in users) {
+      newUsers[`users/${userId}/show_${key}`] = true
+      newUsers[`users/${key}/show_${userId}`] = true
+    }
+
+    ref.update(newUsers)
+  })
 })
