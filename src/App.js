@@ -7,7 +7,8 @@ import {
   MATCHES_PATH,
   DISCOVER_PATH,
   ACCOUNT_PATH,
-  USER_PATH
+  USER_PATH,
+  CHAT_PATH
 } from './constants/paths'
 
 import LoginPage from './containers/LoginPage'
@@ -15,6 +16,7 @@ import DiscoverPage from './containers/DiscoverPage'
 import MatchesPage from './containers/MatchesPage'
 import AccountPage from './containers/AccountPage'
 import UserPage from './containers/UserPage'
+import ChatPage from './containers/ChatPage'
 
 import store from './store'
 
@@ -32,6 +34,7 @@ class App extends Component {
             <Route path={DISCOVER_PATH} component={DiscoverPage} />
             <Route path={ACCOUNT_PATH} component={AccountPage} />
             <Route path={USER_PATH} component={UserPage} />
+            <Route path={CHAT_PATH} component={ChatPage} />
           </Switch>
         </NativeRouter>
       </Provider>
