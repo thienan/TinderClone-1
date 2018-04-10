@@ -1,8 +1,9 @@
 
 import React, { Component } from 'react'
-import { connect } from 'react-redux';
+import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import firebase from '../../utils/firebase'
+import * as messagesActions from '../../components/Messages/actions'
 
 import { StyleSheet, Image } from 'react-native'
 import {
@@ -38,19 +39,7 @@ class ChatPage extends Component {
   }
 
   componentWillMount() {
-    this.setState({
-      messages: [
-        {
-          _id: 1,
-          text: 'Hello developer',
-          createdAt: new Date(),
-          user: {
-            _id: 2,
-            name: 'React Native'
-          },
-        },
-      ],
-    })
+    this.props.messagesActions.fetchMessages(this.props.chat.id)
   }
 
   onSend(messages = []) {
@@ -90,7 +79,7 @@ class ChatPage extends Component {
       <Container>
         <Header noShadow={true} style={styles.header} androidStatusBarColor={GREY}>
           <Body style={styles.headerBody}>
-            <Title style={styles.headerTitle}>Account</Title>
+            <Title style={styles.headerTitle}>{this.props.chat[`title_${this.props.account.id}`]}</Title>
           </Body>
         </Header>
         <Content contentContainerStyle={styles.contentContainer}>
@@ -110,4 +99,10 @@ class ChatPage extends Component {
   }
 }
 
-export default ChatPage
+
+const mapStateToProps = (state, props) => ({
+  account: state.account,
+  chat: state.matches.find(el => el.id == props.match.params.id)
+})
+const mapDispatchToProps = (dispatch) => ({ messagesActions: bindActionCreators(messagesActions, dispatch) })
+export default connect(mapStateToProps, mapDispatchToProps)(ChatPage)

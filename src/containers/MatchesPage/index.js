@@ -1,8 +1,9 @@
 
 import React, { Component } from 'react'
-import { connect } from 'react-redux';
+import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import firebase from '../../utils/firebase'
+import * as matchesActions from '../../components/Matches/actions'
 
 import { StyleSheet, Image } from 'react-native'
 import {
@@ -34,48 +35,9 @@ import {
 } from '../../constants/colors'
 import styles from './styles'
 
-const cards = [
-  {
-    name: 'Emilia Clarke',
-    age: 21,
-    image: {uri: 'https://vignette.wikia.nocookie.net/starwars/images/5/52/Emilia_Clarke.png/revision/latest?cb=20161119014350'},
-  },
-  {
-    name: 'Emma Watson',
-    age: 25,
-    image: {uri: 'https://media2.s-nbcnews.com/i/newscms/2018_01/1308579/emma-watson-today-180105-tease_f3ca373df8f31d68e977fe207aa4a80e.jpg'}
-  },
-  {
-    name: 'Scarlett Johansson',
-    age: 29,
-    image: {uri: 'http://hot97svg.com/wp-content/uploads/2018/01/Scarlett-Johansson-2014-1170x658.jpg'}
-  }
-]
-
 class MatchesPage extends Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      users: []
-    }
-  }
-
-  componentDidMount() {
-    const account = this.props.account
-    const gendersMap = {
-      male: 'female',
-      female: 'male'
-    }
-    const preferedGender = gendersMap[account.gender]
-    const usersRef = firebase.database().ref()
-                                      .child(preferedGender)
-                                      .orderByChild(`hideFor/${account.id}`)
-                                      .equalTo(null)
-    usersRef.on('child_added', (data) => {
-      const users = this.state.users
-      users.push(data.val())
-      this.setState({ users })
-    })
+  componentWillMount() {
+    this.props.matchesActions.fetchMatches(this.props.account.id)
   }
 
   render() {
@@ -87,17 +49,17 @@ class MatchesPage extends Component {
           </Body>
         </Header>
         <Content>
-          <List dataArray={this.state.users} renderRow={(item) =>
+          <List dataArray={this.props.matches} renderRow={(item) =>
               <ListItem avatar>
                 <Left>
-                  <Thumbnail source={{ uri: item.photoUrl }} />
+                  <Thumbnail source={{ uri: item[`photo_${this.props.account.id}`] }} />
                 </Left>
                 <Body>
-                  <Text style={styles.matchName}>{item.displayName}</Text>
+                  <Text style={styles.matchName}>{item[`title_${this.props.account.id}`]}</Text>
                   <Text note style={styles.matchText}>Doing what you like will always keep you happy ...</Text>
                 </Body>
                 <Right style={styles.viewButtonContainer}>
-                  <Text style={styles.matchText}>View</Text>
+                  <Text style={styles.matchText} onPress={() => this.props.history.push(`/chat/${item.id}`) } >View</Text>
                 </Right>
               </ListItem>
             }
@@ -121,5 +83,9 @@ class MatchesPage extends Component {
   }
 }
 
-const mapStateToProps = (state) => ({ account: state.account })
-export default connect(mapStateToProps)(MatchesPage)
+const mapStateToProps = (state) => ({
+  account: state.account,
+  matches: state.matches
+})
+const mapDispatchToProps = (dispatch) => ({ matchesActions: bindActionCreators(matchesActions, dispatch) })
+export default connect(mapStateToProps, mapDispatchToProps)(MatchesPage)
