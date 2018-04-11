@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux'
 import firebase from '../../utils/firebase'
 
-import { StyleSheet, Image } from 'react-native'
+import { StyleSheet, Image, Modal, TouchableOpacity } from 'react-native'
 import {
   Container,
   Header,
@@ -29,7 +29,8 @@ import {
   PURPLE,
   GREY,
   DARK_PINK,
-  ORANGE
+  ORANGE,
+  WHITE
 } from '../../constants/colors'
 import styles from './styles'
 import LinearGradient from 'react-native-linear-gradient'
@@ -42,10 +43,11 @@ const gendersMap = {
 class DiscoverPage extends Component {
   constructor(props) {
     super(props)
-    this.state = { users: [] }
+    this.state = { users: [], matchVisible: false }
     this.swipeRight = this.swipeRight.bind(this)
     this.swipeLeft = this.swipeLeft.bind(this)
     this.renderCard = this.renderCard.bind(this)
+    this.renderMatchModal = this.renderMatchModal.bind(this)
   }
 
   componentDidMount() {
@@ -73,6 +75,7 @@ class DiscoverPage extends Component {
       updates[`matches/${key}/title_${user.id}`] = account.displayName
       updates[`matches/${key}/photo_${account.id}`] = user.photoUrl
       updates[`matches/${key}/photo_${user.id}`] = account.photoUrl 
+      this.setMatchVisible(true)
     }
     firebase.database().ref().update(updates)
   }
@@ -98,11 +101,16 @@ class DiscoverPage extends Component {
     )
   }
 
+  setMatchVisible(matchVisible) {
+    this.setState({ matchVisible })
+  }
+
   renderDeskSwiper() {
     if (this.state.users.length > 0) {
       return (
         <View>
           <DeckSwiper
+            ref={ (c) => this._deckSwiper = c }
             dataSource={this.state.users}
             looping = {false}
             renderItem={this.renderCard}
@@ -119,12 +127,16 @@ class DiscoverPage extends Component {
     if (this.state.users.length > 0) {
       return (
         <View style={styles.actionsWrapper}>
-          <LinearGradient colors={[DARK_PINK, ORANGE]} style={styles.action}>
-            <Icon name="md-close" style={styles.actionIcon} />
-          </LinearGradient>
-          <LinearGradient colors={[PINK, PURPLE]} style={styles.action}>
-            <Icon name="md-heart" style={styles.actionIcon} />
-          </LinearGradient>
+          <TouchableOpacity onPress={() => this._deckSwiper._root.swipeLeft()}>
+            <LinearGradient colors={[DARK_PINK, ORANGE]} style={styles.action}>
+              <Icon name="md-close" style={styles.actionIcon} />
+            </LinearGradient>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => this._deckSwiper._root.swipeRight()}>
+            <LinearGradient colors={[PINK, PURPLE]} style={styles.action}>
+              <Icon name="md-heart" style={styles.actionIcon} />
+            </LinearGradient>
+          </TouchableOpacity>
         </View>
       )
     }
@@ -132,6 +144,27 @@ class DiscoverPage extends Component {
       <View style={styles.noUsersContainer}>
         <Text style={styles.noUserText}>There are no users</Text>
       </View>
+    )
+  }
+
+  renderMatchModal() {
+    return (
+      <Modal
+        animationType='fade'
+        transparent={true}
+        visible={this.state.matchVisible}
+        onRequestClose={ () => false }>
+        <View style={{ flex: 1, backgroundColor:'rgba(0,0,0,0.7)', justifyContent: 'center', alignItems: 'center' }}>
+          <Text style={{ color: WHITE, marginBottom: 20, fontSize: 40, fontFamily: 'Quicksand-Bold' }}>It's a Match!</Text>
+          <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+            <Button bordered light rounded large onPress={() => {
+              this.setMatchVisible(false)
+            }}>
+              <Text>Cool</Text>
+            </Button>
+          </View>
+        </View>
+      </Modal>
     )
   }
 
@@ -144,6 +177,7 @@ class DiscoverPage extends Component {
           </Body>
         </Header>
         <Content contentContainerStyle={styles.contentContainer}>
+          {this.renderMatchModal()}
           {this.renderDeskSwiper()}
           {this.renderActions()}
         </Content>

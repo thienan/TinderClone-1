@@ -32,6 +32,12 @@ export const login = () => {
   }
 }
 
+export const logout = () => {
+  return (dispatch) => {
+    return FacebookAuth.logout().then(() => dispatch(deleteAccount()))
+  }
+}
+
 export const saveAccount = (account) => ({ type: SAVE_ACCOUNT, payload: account })
 export const updateAccount = (account) => ({ type: UPDATE_ACCOUNT, payload: account })
 export const deleteAccount = () => ({ type: DELETE_ACCOUNT, payload: {} })

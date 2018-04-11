@@ -2,7 +2,9 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux'
-import { StyleSheet, Image } from 'react-native'
+import * as accountActions from '../../components/Account/actions'
+
+import { StyleSheet, Image, TouchableOpacity } from 'react-native'
 import {
   Container,
   Header,
@@ -37,6 +39,11 @@ import LinearGradient from 'react-native-linear-gradient'
 class AccountPage extends Component {
   constructor(props) {
     super(props)
+    this.handleLogout = this.handleLogout.bind(this)
+  }
+
+  handleLogout() {
+    this.props.accountActions.logout().then(() => this.props.history.push('/login'))
   }
 
   render() {
@@ -60,11 +67,13 @@ class AccountPage extends Component {
             <Content contentContainerStyle={styles.contentContainer}>
               <Thumbnail large source={{ uri: account.photoUrl }} />
               <Text style={styles.accountName}>{`${account.displayName}, ${account.age}`}</Text>
-              <LinearGradient colors={ [PINK, PURPLE] } style={styles.gradientButton}
-                start={{x: 0.0, y: 0.0}} end={{x: 1.0, y: 1.0}} >
-                <Icon name='ios-settings' style={styles.buttonIcon} />
-                <Text style={styles.buttonText} >Settings</Text>
-              </LinearGradient>
+              <TouchableOpacity onPress={this.handleLogout}>
+                <LinearGradient colors={ [PINK, PURPLE] } style={styles.gradientButton}
+                  start={{x: 0.0, y: 0.0}} end={{x: 1.0, y: 1.0}}>
+                  <Icon name='ios-exit-outline' style={styles.buttonIcon} />
+                  <Text style={styles.buttonText}>Logout</Text>
+                </LinearGradient>
+              </TouchableOpacity>
             </Content>
           }
         <Footer>
@@ -86,4 +95,5 @@ class AccountPage extends Component {
 }
 
 const mapStateToProps = (state) => ({ account: state.account })
-export default connect(mapStateToProps)(AccountPage)
+const mapDispatchToProps = (dispatch) => ({ accountActions: bindActionCreators(accountActions, dispatch) })
+export default connect(mapStateToProps, mapDispatchToProps)(AccountPage)
