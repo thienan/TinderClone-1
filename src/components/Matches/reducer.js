@@ -1,7 +1,7 @@
 import {
   ADD_MATCH,
   UPDATE_MATCH,
-  DELETE_MATCH
+  DELETE_ALL_MATCHES
 } from './actionTypes'
 
 const initialState = []
@@ -15,8 +15,8 @@ const matches = (state = initialState, action) => {
       const match = action.payload
       return state.map( el => el.id === match.id ? match : el)
 
-    case DELETE_MATCH:
-      return state.filter(el=> el.id !== action.payload.id)
+    case DELETE_ALL_MATCHES:
+      return initialState
 
     default:
       return state

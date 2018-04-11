@@ -5,9 +5,6 @@ export default StyleSheet.create({
   header: {
     backgroundColor: WHITE
   },
-  headerBody: {
-    paddingHorizontal: 20
-  },
   headerTitle: {
     color: DARK_GREY,
     fontSize: 30,

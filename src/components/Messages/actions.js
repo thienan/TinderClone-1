@@ -7,11 +7,21 @@ import {
 
 export const fetchMessages = (match_id) => {
   return (dispatch) => {
-    const messagesRef = firebase.database().ref(`messages/${match_id}`)
-                               .orderByChild('timestamp')
-    return messagesRef.on('child_added', (snap) => {
+    const messagesRef = firebase.database().ref(`messages/${match_id}`).orderByChild('createdAt')
+    messagesRef.on('child_added', (snap) => {
       dispatch(addMessage({ id: snap.key, ...snap.val() }))
     })
+    return messagesRef
+  }
+}
+
+export const sendMessage = (match_id, message) => {
+  return (dispatch) => {
+    const updates = {}
+    const key = firebase.database().ref().child('messages').push().key
+    message._id = key
+    updates[`messages/${match_id}/${key}`] = message
+    firebase.database().ref().update(updates)
   }
 }
 

@@ -11,6 +11,8 @@ import {
   Header,
   Content,
   Text,
+  Left,
+  Button,
   View,
   Body,
   Title,
@@ -34,18 +36,22 @@ import styles from './styles'
 class ChatPage extends Component {
   constructor(props) {
     super(props)
-    this.state = { messages: [] }
+    this.state = { ref: null }
     this.onSend = this.onSend.bind(this)
   }
 
   componentWillMount() {
-    this.props.messagesActions.fetchMessages(this.props.chat.id)
+    const ref = this.props.messagesActions.fetchMessages(this.props.chat.id)
+    this.setState({ ref })
+  }
+
+  componentWillUnmount() {
+    this.state.ref.off()
+    this.props.messagesActions.deleteAllMessages()
   }
 
   onSend(messages = []) {
-    this.setState(previousState => ({
-      messages: GiftedChat.append(previousState.messages, messages)
-    }))
+    this.props.messagesActions.sendMessage(this.props.chat.id, messages[0])
   }
 
   renderSend(props) {
@@ -78,20 +84,25 @@ class ChatPage extends Component {
     return (
       <Container>
         <Header noShadow={true} style={styles.header} androidStatusBarColor={GREY}>
-          <Body style={styles.headerBody}>
+          <Left>
+            <Button transparent onPress={this.props.history.goBack}>
+              <Icon name='arrow-back' style={styles.sendIcon}/>
+            </Button>
+          </Left>
+          <Body>
             <Title style={styles.headerTitle}>{this.props.chat[`title_${this.props.account.id}`]}</Title>
           </Body>
         </Header>
         <Content contentContainerStyle={styles.contentContainer}>
           <GiftedChat
-            messages={this.state.messages}
+            messages={this.props.messages}
             onSend={this.onSend}
             renderAvatar={null}
             renderSend={this.renderSend}
             renderBubble={this.renderBubble}
             renderInputToolbar={this.renderInputToolbar}
             renderLoading={() => <Spinner color={PURPLE} size='large' />}
-            user={{ _id: 1 }}
+            user={{ _id: this.props.account.id }}
           />
         </Content>
       </Container>
@@ -102,7 +113,8 @@ class ChatPage extends Component {
 
 const mapStateToProps = (state, props) => ({
   account: state.account,
-  chat: state.matches.find(el => el.id == props.match.params.id)
+  chat: state.matches.find(el => el.id == props.match.params.id),
+  messages: state.messages
 })
 const mapDispatchToProps = (dispatch) => ({ messagesActions: bindActionCreators(messagesActions, dispatch) })
 export default connect(mapStateToProps, mapDispatchToProps)(ChatPage)

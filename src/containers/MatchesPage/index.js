@@ -36,8 +36,16 @@ import {
 import styles from './styles'
 
 class MatchesPage extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      ref: null
+    }
+  }
+
   componentWillMount() {
-    this.props.matchesActions.fetchMatches(this.props.account.id)
+    const ref = this.props.matchesActions.fetchMatches(this.props.account.id)
+    this.setState({ ref })
   }
 
   render() {
