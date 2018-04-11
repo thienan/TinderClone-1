@@ -101,16 +101,38 @@ class DiscoverPage extends Component {
   renderDeskSwiper() {
     if (this.state.users.length > 0) {
       return (
-        <DeckSwiper
-          dataSource={this.state.users}
-          looping = {false}
-          renderItem={this.renderCard}
-          onSwipeRight={this.swipeRight}
-          onSwipeLeft={this.swipeLeft}
-        />
+        <View>
+          <DeckSwiper
+            dataSource={this.state.users}
+            looping = {false}
+            renderItem={this.renderCard}
+            onSwipeRight={this.swipeRight}
+            onSwipeLeft={this.swipeLeft}
+          />
+        </View>
       )
     }
     return false
+  }
+  
+  renderActions() {
+    if (this.state.users.length > 0) {
+      return (
+        <View style={styles.actionsWrapper}>
+          <LinearGradient colors={[DARK_PINK, ORANGE]} style={styles.action}>
+            <Icon name="md-close" style={styles.actionIcon} />
+          </LinearGradient>
+          <LinearGradient colors={[PINK, PURPLE]} style={styles.action}>
+            <Icon name="md-heart" style={styles.actionIcon} />
+          </LinearGradient>
+        </View>
+      )
+    }
+    return (
+      <View style={styles.noUsersContainer}>
+        <Text style={styles.noUserText}>There are no users</Text>
+      </View>
+    )
   }
 
   render() {
@@ -122,15 +144,8 @@ class DiscoverPage extends Component {
           </Body>
         </Header>
         <Content contentContainerStyle={styles.contentContainer}>
-          <View>{this.renderDeskSwiper()}</View>
-          <View style={styles.actionsWrapper}>
-            <LinearGradient colors={[DARK_PINK, ORANGE]} style={styles.action}>
-              <Icon name="md-close" style={styles.actionIcon} />
-            </LinearGradient>
-            <LinearGradient colors={[PINK, PURPLE]} style={styles.action}>
-              <Icon name="md-heart" style={styles.actionIcon} />
-            </LinearGradient>
-          </View>
+          {this.renderDeskSwiper()}
+          {this.renderActions()}
         </Content>
         <Footer>
           <FooterTab style={styles.footerTab}>

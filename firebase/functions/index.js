@@ -24,3 +24,10 @@ exports.createUserShowAttributes = functions.database.ref('users/{userId}').onCr
     ref.update(newUsers)
   })
 })
+
+exports.createLastMessage = functions.database.ref('messages/{match_id}/{message_id}').onWrite(event => {
+  const message = event.data.val()
+  const newMatch = {}
+  newMatch[`matches/${event.params.match_id}/lastMessage`] = message.text
+  return ref.update(newMatch)
+})

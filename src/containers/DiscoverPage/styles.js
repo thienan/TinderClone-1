@@ -65,5 +65,15 @@ export default StyleSheet.create({
   footerIconActive: {
     color: PURPLE,
     fontSize: 30
+  },
+  noUsersContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  noUserText: {
+    color: PURPLE,
+    fontSize: 30,
+    fontFamily: 'Quicksand-Bold'
   }
 })

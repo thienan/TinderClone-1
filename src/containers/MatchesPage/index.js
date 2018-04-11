@@ -44,8 +44,13 @@ class MatchesPage extends Component {
   }
 
   componentWillMount() {
+    this.props.matchesActions.deleteAllMatches()
     const ref = this.props.matchesActions.fetchMatches(this.props.account.id)
     this.setState({ ref })
+  }
+
+  componentWillUnmount() {
+    this.state.ref.off()
   }
 
   render() {
@@ -64,7 +69,7 @@ class MatchesPage extends Component {
                 </Left>
                 <Body>
                   <Text style={styles.matchName}>{item[`title_${this.props.account.id}`]}</Text>
-                  <Text note style={styles.matchText}>Doing what you like will always keep you happy ...</Text>
+                  <Text note style={styles.matchText}>{item.lastMessage}</Text>
                 </Body>
                 <Right style={styles.viewButtonContainer}>
                   <Text style={styles.matchText} onPress={() => this.props.history.push(`/chat/${item.id}`) } >View</Text>
