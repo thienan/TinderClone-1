@@ -46,6 +46,10 @@ class AccountPage extends Component {
     this.props.accountActions.logout().then(() => this.props.history.push('/login'))
   }
 
+  componentWillMount() {
+    this.props.accountActions.fetchAccount(this.props.account.id)
+  }
+
   render() {
     const account = this.props.account
     const showLoader = !Object.keys(account).length

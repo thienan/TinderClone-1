@@ -3,6 +3,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux'
 import firebase from '../../utils/firebase'
+import * as accountActions from '../../components/Account/actions'
 
 import { StyleSheet, Image, Modal, TouchableOpacity } from 'react-native'
 import {
@@ -48,6 +49,11 @@ class DiscoverPage extends Component {
     this.swipeLeft = this.swipeLeft.bind(this)
     this.renderCard = this.renderCard.bind(this)
     this.renderMatchModal = this.renderMatchModal.bind(this)
+    this.renderActions = this.renderActions.bind(this)
+  }
+
+  componentWillMount() {
+    this.props.accountActions.fetchAccount(this.props.account.id)
   }
 
   componentDidMount() {
@@ -120,7 +126,11 @@ class DiscoverPage extends Component {
         </View>
       )
     }
-    return false
+    return (
+      <View style={styles.noUsersContainer}>
+        <Text style={styles.noUserText}>There are no users</Text>
+      </View>
+    )
   }
   
   renderActions() {
@@ -140,11 +150,7 @@ class DiscoverPage extends Component {
         </View>
       )
     }
-    return (
-      <View style={styles.noUsersContainer}>
-        <Text style={styles.noUserText}>There are no users</Text>
-      </View>
-    )
+    return false
   }
 
   renderMatchModal() {
@@ -154,9 +160,9 @@ class DiscoverPage extends Component {
         transparent={true}
         visible={this.state.matchVisible}
         onRequestClose={ () => false }>
-        <View style={{ flex: 1, backgroundColor:'rgba(0,0,0,0.7)', justifyContent: 'center', alignItems: 'center' }}>
-          <Text style={{ color: WHITE, marginBottom: 20, fontSize: 40, fontFamily: 'Quicksand-Bold' }}>It's a Match!</Text>
-          <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+        <View style={styles.modalContainer}>
+          <Text style={styles.modalText}>It's a Match!</Text>
+          <View style={styles.modalButtonWrapper}>
             <Button bordered light rounded large onPress={() => {
               this.setMatchVisible(false)
             }}>
@@ -179,7 +185,6 @@ class DiscoverPage extends Component {
         <Content contentContainerStyle={styles.contentContainer}>
           {this.renderMatchModal()}
           {this.renderDeskSwiper()}
-          {this.renderActions()}
         </Content>
         <Footer>
           <FooterTab style={styles.footerTab}>
@@ -200,4 +205,5 @@ class DiscoverPage extends Component {
 }
 
 const mapStateToProps = (state) => ({ account: state.account })
-export default connect(mapStateToProps)(DiscoverPage)
+const mapDispatchToProps = (dispatch) => ({ accountActions: bindActionCreators(accountActions, dispatch) })
+export default connect(mapStateToProps, mapDispatchToProps)(DiscoverPage)

@@ -24,10 +24,18 @@ export const login = () => {
                               photoUrl: userInfo.photoURL }
             firebase.database().ref(`users/${userInfo.uid}`).set(newUser)
           }
-          firebase.database().ref(`users/${userInfo.uid}`).on('value', (snap) => {
+          firebase.database().ref(`users/${userInfo.uid}`).once('value', (snap) => {
             dispatch(saveAccount({ id: userInfo.uid, ...snap.val() }))
           })
         })
+    })
+  }
+}
+
+export const fetchAccount = (account_id) => {
+  return (dispatch) => {
+    return firebase.database().ref(`users/${account_id}`).once('value', (snap) => {
+      dispatch(saveAccount({ id: account_id, ...snap.val() }))
     })
   }
 }

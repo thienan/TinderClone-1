@@ -75,5 +75,21 @@ export default StyleSheet.create({
     color: PURPLE,
     fontSize: 30,
     fontFamily: 'Quicksand-Bold'
+  },
+  modalContainer: {
+    flex: 1,
+    backgroundColor:'rgba(0,0,0,0.7)',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  modalText: {
+    color: WHITE,
+    marginBottom: 20,
+    fontSize: 40,
+    fontFamily: 'Quicksand-Bold'
+  },
+  modalButtonWrapper: {
+    justifyContent: 'center',
+    alignItems: 'center'
   }
 })
